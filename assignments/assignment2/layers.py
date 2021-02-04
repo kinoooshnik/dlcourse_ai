@@ -38,8 +38,10 @@ def softmax(predictions):
             np.exp(predictions), axis=1
         ).transpose().reshape((predictions.shape[0], 1))
     else:
-        predictions -= np.max(predictions)
-        result = np.exp(predictions) / np.sum(np.exp(predictions))
+        predictions -= np.max(predictions, axis=1, keepdims=True)
+        result = np.exp(predictions) / np.sum(
+            np.exp(predictions), axis=1, keepdims=True
+        )
 
     return result
 
@@ -56,9 +58,8 @@ def cross_entropy_loss(probs, target_index):
       loss: single value
     """
     # Your final implementation shouldn't have any loops
-
     if probs.ndim > 1:
-        ans = -np.sum(
+        ans = -np.mean(
             np.log(probs[np.arange(len(target_index)), target_index.reshape(1, -1)])
         )
     else:
@@ -140,7 +141,6 @@ class FullyConnectedLayer:
     def forward(self, X: np.array) -> np.array:
         self.X = X
         return self.X @ self.W.value + self.B.value
-        # Your final implementation shouldn't have any loops
 
     def backward(self, d_out):
         """
@@ -156,7 +156,6 @@ class FullyConnectedLayer:
         d_result: np array (batch_size, n_input) - gradient
           with respect to input
         """
-        # TODO: Implement backward pass
         # Compute both gradient with respect to input
         # and gradients with respect to W and B
         # Add gradients of W and B to their `grad` attribute
